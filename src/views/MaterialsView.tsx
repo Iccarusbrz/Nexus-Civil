@@ -23,6 +23,14 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { 
   LineChart, 
   Line, 
@@ -43,7 +51,11 @@ export function MaterialsView({ projects }: MaterialsViewProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<string>('global');
   const { materials, createMaterial, updateMaterial, deleteMaterial } = useMaterials(selectedProjectId);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAdding, setIsAdding] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newMatName, setNewMatName] = useState('');
+  const [newMatUnit, setNewMatUnit] = useState('Un');
+  const [newMatPrice, setNewMatPrice] = useState<number | ''>('');
+  const [newMatCategory, setNewMatCategory] = useState('Geral');
 
   // Calculator state
   const [calcMaterial, setCalcMaterial] = useState<string>('');
@@ -54,16 +66,28 @@ export function MaterialsView({ projects }: MaterialsViewProps) {
     m.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAddMaterial = async () => {
-    if (!selectedProjectId || selectedProjectId === 'global') return;
+  const handleAddMaterial = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!selectedProjectId) return;
+    
+    if (!newMatName.trim()) {
+      toast.error('O nome do insumo é obrigatório');
+      return;
+    }
+    
     try {
       await createMaterial({
-        name: 'Novo Insumo',
-        unit: 'Un',
-        price: 0,
-        category: 'Geral',
+        name: newMatName,
+        unit: newMatUnit,
+        price: Number(newMatPrice) || 0,
+        category: newMatCategory,
       });
-      toast.success('Insumo adicionado');
+      toast.success('Insumo adicionado com sucesso');
+      setIsAddModalOpen(false);
+      setNewMatName('');
+      setNewMatPrice('');
+      setNewMatCategory('Geral');
+      setNewMatUnit('Un');
     } catch {
       toast.error('Erro ao adicionar insumo');
     }
@@ -104,9 +128,77 @@ export function MaterialsView({ projects }: MaterialsViewProps) {
               ))}
             </SelectContent>
           </Select>
-          <Button disabled={!selectedProjectId || selectedProjectId === 'global'} onClick={handleAddMaterial} className="bg-orange-600">
-            <Plus className="mr-2 h-4 w-4" /> Novo Insumo
-          </Button>
+          <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+            <DialogTrigger asChild>
+              <Button disabled={!selectedProjectId} className="bg-orange-600">
+                <Plus className="mr-2 h-4 w-4" /> Novo Insumo
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Adicionar Novo Insumo</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddMaterial} className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label>Nome do Insumo</Label>
+                  <Input 
+                    placeholder="Ex: Cimento Portland 50kg" 
+                    value={newMatName}
+                    onChange={(e) => setNewMatName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Unidade de Medida</Label>
+                    <Select value={newMatUnit} onValueChange={setNewMatUnit}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Unidade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Un">Unidade (Un)</SelectItem>
+                        <SelectItem value="kg">Quilo (kg)</SelectItem>
+                        <SelectItem value="g">Grama (g)</SelectItem>
+                        <SelectItem value="t">Tonelada (t)</SelectItem>
+                        <SelectItem value="m">Metro linear (m)</SelectItem>
+                        <SelectItem value="m²">Metro quadrado (m²)</SelectItem>
+                        <SelectItem value="m³">Metro cúbico (m³)</SelectItem>
+                        <SelectItem value="L">Litro (L)</SelectItem>
+                        <SelectItem value="cx">Caixa (cx)</SelectItem>
+                        <SelectItem value="hr">Hora (hr)</SelectItem>
+                        <SelectItem value="sv">Serviço (sv)</SelectItem>
+                        <SelectItem value="mês">Mês</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Preço Unitário (R$)</Label>
+                    <Input 
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      value={newMatPrice}
+                      onChange={(e) => setNewMatPrice(e.target.value ? Number(e.target.value) : '')}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Categoria</Label>
+                  <Input 
+                    placeholder="Ex: Materiais Básicos, Acabamento..." 
+                    value={newMatCategory}
+                    onChange={(e) => setNewMatCategory(e.target.value)}
+                  />
+                </div>
+                <DialogFooter className="pt-4">
+                  <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>Cancelar</Button>
+                  <Button type="submit" className="bg-slate-900 border-none">Salvar Insumo</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
