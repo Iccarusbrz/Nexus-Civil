@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "julio.cghenrique@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isProjectOwner(projectId) {
+      return isAuthenticated() && (
+        get(/databases/$(database)/documents/projects/$(projectId)).data.ownerId == request.auth.uid ||
+        isAdmin()
+      );
+    }
+
+    // ===============================================================
+    // Validation Functions
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['email', 'role']) &&
+             data.email is string &&
+             data.role in ['admin', 'engineer', 'manager', 'client'];
+    }
+
+    function isValidProject(data) {
+      return data.keys().hasAll(['name', 'type', 'status', 'ownerId']) &&
+             data.name is string && data.name.size() < 100 &&
+             data.type is string &&
+             data.ownerId == request.auth.uid;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) && request.resource.data.role == resource.data.role || isAdmin());
+    }
+
+    match /projects/{projectId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidProject(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+      allow delete: if isAuthenticated() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isProjectOwner(request.resource.data.projectId);
+      allow update: if isAuthenticated() && isProjectOwner(resource.data.projectId);
+      allow delete: if isAuthenticated() && isProjectOwner(resource.data.projectId);
+    }
+
+    match /diary_entries/{entryId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isProjectOwner(request.resource.data.projectId);
+      allow update: if isAuthenticated() && isProjectOwner(resource.data.projectId);
+      allow delete: if isAuthenticated() && isProjectOwner(resource.data.projectId);
+    }
+
+    match /bdi_configs/{configId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isProjectOwner(request.resource.data.projectId);
+      allow delete: if isAuthenticated() && isProjectOwner(resource.data.projectId);
+    }
+
+    match /memorial_sections/{sectionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isProjectOwner(request.resource.data.projectId);
+      allow update: if isAuthenticated() && isProjectOwner(resource.data.projectId);
+      allow delete: if isAuthenticated() && isProjectOwner(resource.data.projectId);
+    }
+
+    match /materials/{materialId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated(); // For now allow all users to manage materials
+    }
+  }
+}

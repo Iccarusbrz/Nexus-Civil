@@ -1,0 +1,164 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A construction project (Predio, Casa, Comercial, Industrial, Infraestrutura, Rodovias, Ruas, or Parques)",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["predio", "casa", "comercial", "industrial", "infraestrutura", "rodovias", "ruas", "parques"] },
+        "status": { "type": "string", "enum": ["planning", "execution", "maintenance", "completed"] },
+        "location": { "type": "string" },
+        "budget": { "type": "number" },
+        "spent": { "type": "number" },
+        "progress": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "ownerId": { "type": "string" }
+      },
+      "required": ["name", "type", "status", "ownerId"]
+    },
+    "IoTDevice": {
+      "title": "IoT Device",
+      "description": "A sensor monitoring structural health or site conditions",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string", "enum": ["vibration", "inclination", "temperature", "humidity"] },
+        "lastValue": { "type": "number" },
+        "unit": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "warning", "critical", "offline"] }
+      },
+      "required": ["projectId", "name", "type"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "A Lean Construction task for the site",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "assignedTo": { "type": "string" },
+        "dueDate": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["todo", "in-progress", "blocked", "done"] }
+      },
+      "required": ["projectId", "title", "status"]
+    },
+    "GanttTask": {
+      "title": "Gantt Task",
+      "description": "A task in the project schedule",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "name": { "type": "string" },
+        "start": { "type": "string", "format": "date" },
+        "end": { "type": "string", "format": "date" },
+        "progress": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "delayed"] },
+        "responsible": { "type": "string" },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "parentId": { "type": "string" }
+      },
+      "required": ["projectId", "name", "start", "end", "status"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "Construction material or supply",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "unit": { "type": "string" },
+        "price": { "type": "number" },
+        "supplier": { "type": "string" },
+        "lastQuoted": { "type": "string", "format": "date" }
+      },
+      "required": ["name", "unit", "price"]
+    },
+    "BDIConfig": {
+      "title": "BDI Configuration",
+      "description": "BDI calculation parameters for a project",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "adminCentral": { "type": "number" },
+        "segurosGarantias": { "type": "number" },
+        "risco": { "type": "number" },
+        "despesasFinanceiras": { "type": "number" },
+        "lucro": { "type": "number" },
+        "cofins": { "type": "number" },
+        "pis": { "type": "number" },
+        "iss": { "type": "number" },
+        "cprb": { "type": "number" },
+        "bdiCalculado": { "type": "number" }
+      },
+      "required": ["projectId", "bdiCalculado"]
+    },
+    "Memorial": {
+      "title": "Descriptive Memorial",
+      "description": "Technical document for a project",
+      "type": "object",
+      "properties": {
+        "projectId": { "type": "string" },
+        "sections": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "content": { "type": "string" },
+              "order": { "type": "number" }
+            }
+          }
+        },
+        "version": { "type": "number" }
+      },
+      "required": ["projectId", "sections"]
+    },
+    "User": {
+      "title": "User",
+      "description": "App user profile",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "engineer", "manager", "client"] }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Construction projects"
+    },
+    "/projects/{projectId}/devices/{deviceId}": {
+      "schema": "IoTDevice",
+      "description": "IoT sensors for a specific project"
+    },
+    "/projects/{projectId}/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Lean tasks for a specific project"
+    },
+    "/projects/{projectId}/gantt_tasks/{taskId}": {
+      "schema": "GanttTask",
+      "description": "Gantt schedule for a specific project"
+    },
+    "/projects/{projectId}/bdi": {
+      "schema": "BDIConfig",
+      "description": "BDI configuration for a project"
+    },
+    "/projects/{projectId}/memorials/{memorialId}": {
+      "schema": "Memorial",
+      "description": "Descriptive memorials for a project"
+    },
+    "/materials/{materialId}": {
+      "schema": "Material",
+      "description": "Global materials catalog"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    }
+  }
+}

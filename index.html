@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <title>Nexus Civil | Inteligência de Obras</title>
+    <script>
+      // Forceful fix for "Cannot set property fetch of #<Window> which has only a getter"
+      (function() {
+        var _f = window.fetch;
+        try {
+          // Attempt 1: Redefine on window
+          Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            enumerable: true,
+            get: function() { return _f; },
+            set: function(v) { _f = v; }
+          });
+        } catch (e) {
+          try {
+            // Attempt 2: Delete and re-assign (works if configurable)
+            delete window.fetch;
+            window.fetch = _f;
+          } catch (e2) {
+            // Attempt 3: Prototype chain walk
+            var p = window;
+            while (p) {
+              try {
+                var d = Object.getOwnPropertyDescriptor(p, 'fetch');
+                if (d && d.configurable) {
+                  Object.defineProperty(p, 'fetch', {
+                    configurable: true,
+                    get: function() { return _f; },
+                    set: function(v) { _f = v; }
+                  });
+                  break;
+                }
+              } catch (ex) {}
+              p = Object.getPrototypeOf(p);
+            }
+          }
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
