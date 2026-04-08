@@ -5,15 +5,15 @@
 [functions]
   directory = "netlify/functions"
 
-# Regra para SPA (Evita erro 404 ao recarregar a página)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
 # Proxy para a rota de API (Mantém o frontend funcionando como está)
 [[redirects]]
   from = "/api/gemini"
   to = "/.netlify/functions/gemini"
   status = 200
   force = true
+
+# Regra para SPA - DEVE SER A ÚLTIMA (Evita erro 404 ao recarregar a página)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
