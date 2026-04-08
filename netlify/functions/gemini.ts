@@ -23,8 +23,12 @@ export const handler: Handler = async (event, context) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Force a known universally available model name
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Use gemini-flash-latest as that is available on the user's API key
+    const modelToUse = receivedModelName === "gemini-1.5-flash" || receivedModelName === "gemini-pro" 
+      ? "gemini-flash-latest" 
+      : (receivedModelName || "gemini-flash-latest");
+      
+    const model = genAI.getGenerativeModel({ model: modelToUse });
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
