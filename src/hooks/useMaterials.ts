@@ -33,11 +33,11 @@ export function useMaterials(projectId: string | undefined) {
         ...doc.data() 
       } as Material));
       
-      setMaterials(data.length > 0 ? data : getLocalMockData('materials', MOCK_MATERIALS));
+      setMaterials(data.length > 0 ? data : getLocalMockData(`materials_${projectId}`, []));
       setLoading(false);
     }, (error) => {
       // Offline/Error local fallback
-      setMaterials(getLocalMockData('materials', MOCK_MATERIALS));
+      setMaterials(getLocalMockData(`materials_${projectId}`, []));
       setLoading(false);
     });
 
@@ -45,47 +45,77 @@ export function useMaterials(projectId: string | undefined) {
   }, [projectId]);
 
   const createMaterial = async (materialData: Partial<Material>) => {
-    if (!projectId || projectId === 'global') return;
+    if (!projectId) return;
     const newMat = {
       id: Math.random().toString(36).substr(2, 9),
       ...materialData,
       projectId,
-      createdAt: serverTimestamp(),
+      createdAt: new Date().toISOString() as any, // Avoiding serverTimestamp for local safety
     } as Material;
 
-    try {
-      await addDoc(collection(db, 'projects', projectId, 'materials'), newMat);
-    } catch (error) {
+    if (projectId === 'global') {
       setMaterials(prev => {
         const next = [...prev, newMat];
         saveLocalMockData('materials', next);
+        return next;
+      });
+      return;
+    }
+
+    try {
+      const fbMat = { ...newMat, createdAt: serverTimestamp() };
+      await addDoc(collection(db, 'projects', projectId, 'materials'), fbMat);
+    } catch (error) {
+      setMaterials(prev => {
+        const next = [...prev, newMat];
+        saveLocalMockData(`materials_${projectId}`, next);
         return next;
       });
     }
   };
 
   const updateMaterial = async (materialId: string, materialData: Partial<Material>) => {
-    if (!projectId || projectId === 'global') return;
+    if (!projectId) return;
+    
+    if (projectId === 'global') {
+      setMaterials(prev => {
+        const next = prev.map(m => m.id === materialId ? { ...m, ...materialData } : m);
+        saveLocalMockData('materials', next);
+        return next;
+      });
+      return;
+    }
+
     try {
       const materialRef = doc(db, 'projects', projectId, 'materials', materialId);
       await updateDoc(materialRef, materialData);
     } catch (error) {
       setMaterials(prev => {
         const next = prev.map(m => m.id === materialId ? { ...m, ...materialData } : m);
-        saveLocalMockData('materials', next);
+        saveLocalMockData(`materials_${projectId}`, next);
         return next;
       });
     }
   };
 
   const deleteMaterial = async (materialId: string) => {
-    if (!projectId || projectId === 'global') return;
+    if (!projectId) return;
+
+    if (projectId === 'global') {
+      setMaterials(prev => {
+        const next = prev.filter(m => m.id !== materialId);
+        saveLocalMockData('materials', next);
+        return next;
+      });
+      return;
+    }
+
     try {
       await deleteDoc(doc(db, 'projects', projectId, 'materials', materialId));
     } catch (error) {
       setMaterials(prev => {
         const next = prev.filter(m => m.id !== materialId);
-        saveLocalMockData('materials', next);
+        saveLocalMockData(`materials_${projectId}`, next);
         return next;
       });
     }
