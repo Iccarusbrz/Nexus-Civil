@@ -8,7 +8,9 @@ export const handler: Handler = async (event, context) => {
   }
 
   try {
-    const { prompt, modelName } = JSON.parse(event.body || "{}");
+    const { prompt, modelName: receivedModelName } = JSON.parse(event.body || "{}");
+    console.log("Received model name from frontend:", receivedModelName);
+    
     const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
     if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey.trim() === "") {
@@ -21,7 +23,8 @@ export const handler: Handler = async (event, context) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: modelName || "gemini-1.5-flash" });
+    // Force a known stable model name
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
