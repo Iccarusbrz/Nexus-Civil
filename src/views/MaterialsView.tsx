@@ -298,7 +298,9 @@ export function MaterialsView({ projects }: MaterialsViewProps) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Quantidade Necessária</Label>
+                <Label>
+                  Quantidade Necessária {selectedMatForCalc ? `(${selectedMatForCalc.unit})` : ''}
+                </Label>
                 <Input 
                   type="number" 
                   value={calcQuantity} 
