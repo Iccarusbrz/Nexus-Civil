@@ -139,8 +139,8 @@ export function LeanView({ projects }: LeanViewProps) {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         <div>
           <h3 className="text-2xl font-bold text-slate-800">Canteiro Lean</h3>
           <p className="text-slate-500">Gestão visual de tarefas e produtividade de campo</p>
@@ -160,9 +160,9 @@ export function LeanView({ projects }: LeanViewProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-[calc(100vh-250px)]">
+      <div className="flex lg:grid lg:grid-cols-4 gap-6 h-[calc(100vh-250px)] overflow-x-auto pb-4 snap-x snap-mandatory">
         {columns.map(col => (
-          <div key={col.id} className="flex flex-col gap-4 bg-slate-100/50 rounded-xl p-4 border border-slate-200">
+          <div key={col.id} className="flex flex-col gap-4 bg-slate-100/50 rounded-xl p-4 border border-slate-200 shrink-0 w-[85vw] sm:w-[320px] lg:w-auto snap-center">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${col.color}`} />
@@ -223,7 +223,7 @@ export function LeanView({ projects }: LeanViewProps) {
       </div>
 
       <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="w-[95vw] max-w-[425px] sm:w-full">
           <DialogHeader>
             <DialogTitle>Editar Tarefa Lean</DialogTitle>
             <DialogDescription>

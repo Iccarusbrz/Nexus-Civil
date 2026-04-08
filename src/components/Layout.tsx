@@ -118,8 +118,8 @@ export function Layout({ children, activeTab, setActiveTab }: LayoutProps) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-10 shrink-0">
-          <h2 className="text-lg font-semibold text-slate-800 capitalize">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 pl-16 lg:px-8 sticky top-0 z-10 shrink-0">
+          <h2 className="text-lg font-semibold text-slate-800 capitalize truncate">
             {menuItems.find(i => i.id === activeTab)?.label || 'Nexus Civil'}
           </h2>
           <div className="flex items-center gap-4">

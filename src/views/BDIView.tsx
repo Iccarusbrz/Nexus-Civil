@@ -176,15 +176,15 @@ export function BDIView({ projects }: BDIViewProps) {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         <div>
           <h3 className="text-2xl font-bold text-slate-800">Calculadora BDI</h3>
           <p className="text-slate-500">Cálculo de Benefícios e Despesas Indiretas conforme acórdãos do TCU</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4 sm:mt-0">
           <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-            <SelectTrigger className="w-[250px] bg-white">
+            <SelectTrigger className="w-full sm:w-[250px] bg-white">
               <SelectValue placeholder="Selecione a Obra" />
             </SelectTrigger>
             <SelectContent>

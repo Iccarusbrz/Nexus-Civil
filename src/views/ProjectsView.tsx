@@ -84,8 +84,8 @@ export function ProjectsView({ projects, onCreate, onUpdate, onDelete, onTabChan
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         <div>
           <h3 className="text-2xl font-bold text-slate-800">Meus Projetos</h3>
           <p className="text-slate-500">Gerencie seu portfólio de obras e conformidade BIM</p>
@@ -101,7 +101,7 @@ export function ProjectsView({ projects, onCreate, onUpdate, onDelete, onTabChan
               <Plus className="mr-2 h-4 w-4" /> Novo Projeto
             </Button>
           } />
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="w-[95vw] max-w-[500px] sm:w-full max-h-[90vh] overflow-y-auto">
             <form onSubmit={handleSubmit}>
               <DialogHeader>
                 <DialogTitle>{editingProject ? 'Editar Projeto' : 'Cadastrar Novo Projeto'}</DialogTitle>
@@ -240,7 +240,7 @@ export function ProjectsView({ projects, onCreate, onUpdate, onDelete, onTabChan
 
       {/* Blueprints Dialog */}
       <Dialog open={!!blueprintProject} onOpenChange={(open) => !open && setBlueprintProject(null)}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="w-[95vw] max-w-[600px] sm:w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Gestão de Plantas - {blueprintProject?.name}</DialogTitle>
             <DialogDescription>

@@ -259,8 +259,8 @@ export function DiaryView({ projects }: DiaryViewProps) {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         <div>
           <h3 className="text-2xl font-bold text-slate-800">Diário de Obra</h3>
           <p className="text-slate-500">Registro diário de atividades, clima e ocorrências (NBR 12722)</p>
@@ -287,8 +287,8 @@ export function DiaryView({ projects }: DiaryViewProps) {
       </div>
 
       {isNewEntryOpen ? (
-        <Card className="border-orange-200 shadow-lg">
-          <CardHeader className="bg-orange-50/50">
+        <Card className="border-orange-200 shadow-lg overflow-hidden">
+          <CardHeader className="bg-orange-50/50 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <CardTitle className="flex items-center gap-2">
               <CalendarIcon className="text-orange-600" />
               Novo Registro - {format(new Date(), "dd 'de' MMMM, yyyy", { locale: ptBR })}

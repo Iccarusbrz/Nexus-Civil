@@ -102,7 +102,7 @@ export function DashboardView({ projects }: DashboardViewProps) {
   const COLORS = ['#0ea5e9', '#8b5cf6', '#f59e0b', '#ef4444', '#10b981'];
 
   return (
-    <div className="space-y-8 p-8">
+    <div className="space-y-6 lg:space-y-8 p-4 sm:p-6 lg:p-8">
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 

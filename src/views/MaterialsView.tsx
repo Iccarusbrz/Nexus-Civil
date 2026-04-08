@@ -110,15 +110,15 @@ export function MaterialsView({ projects }: MaterialsViewProps) {
   const totalCalc = selectedMatForCalc ? selectedMatForCalc.price * calcQuantity : 0;
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center">
         <div>
           <h3 className="text-2xl font-bold text-slate-800">Insumos e Materiais</h3>
           <p className="text-slate-500">Gestão de preços, cotações e estimativas de consumo</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-4 sm:mt-0">
           <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-            <SelectTrigger className="w-[250px] bg-white">
+            <SelectTrigger className="w-full sm:w-[250px] bg-white">
               <SelectValue placeholder="Filtrar por Obra" />
             </SelectTrigger>
             <SelectContent>
@@ -134,7 +134,7 @@ export function MaterialsView({ projects }: MaterialsViewProps) {
                 <Plus className="mr-2 h-4 w-4" /> Novo Insumo
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="w-[95vw] max-w-[425px] sm:w-full max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Adicionar Novo Insumo</DialogTitle>
               </DialogHeader>
